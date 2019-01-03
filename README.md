@@ -1,4 +1,4 @@
-# nand2tetirs
+# nand2tetris
 Building a  Modern Computer, "The Elements of Computing Systems - Noam Nisan and Shimon Schocken"  with Coursera  
 
 ![alt text](./source/Book.jpg)  
