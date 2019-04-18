@@ -9,5 +9,5 @@
     - Parser : .asm 파일을 받아 주석과 white space 를 제거하고 필요한 부분을 각각 파싱하게 된다.
     - Code :  Parser로부터 파싱한 symbol 을 받아서 알맞은 instruction code 를 제공하게 된다. 
     - SymbolTable : 어셈블리를 작성하다 보면 임시변수라던가, 고유 레지스터를 사용하는 경우가 생긴다.(LCL, ARG, THIS, THAT..)  
-    				그러한 레지스터를 등록/관리 할 수 있다.  
+    			그러한 레지스터를 등록/관리 한다.  
                     
