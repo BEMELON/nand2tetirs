@@ -1,4 +1,4 @@
-sequential logic에 대해서 공부하고, 더 들어가 RAM, Program Counter를 Flip-Flop 부터 설계하는 과정을 거치었다.
+sequential logic에 대해서 공부하고, 더 들어가 RAM, Program Counter를 Flip-Flop 부터 설계하는 과정을 거치었다.  
 보통의 하드웨어 강의와는 다르게 Flip-Flop에 대해서 다루기보다는 설계쪽으로 초점을 맞추어져 있었다.  
 
 - Bit  
