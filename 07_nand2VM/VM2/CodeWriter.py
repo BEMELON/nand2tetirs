@@ -146,22 +146,27 @@ class CodeWriter:
 
 
     def writeCall(self, functionName, numArgs):
-        pass
+        numArgs += 5
 
-    # numLocals += 5
-    #
-    # template = "@" + functionName + "// =======================\n"
-    # template += "D=A // writeFunction executed!\n""
-    # template += self.pushTemplate()
-    # template += "@LCL\nD=M\n"
-    # template += self.pushTemplate()
-    # template += "@ARG\nD=M\n"
-    # template += self.pushTemplate()
-    # template += "@THIS\nD=M\n"
-    # template += self.pushTemplate()
-    # template += "@THAT\nD=M\n"
-    # template += self.pushTemplate()
-    #
+        template = "@" + functionName + "// =======================\n"
+        template += "D=A // writeFunction executed!\n"
+        template += self.pushTemplate()
+        template += "@LCL\nD=M\n"
+        template += self.pushTemplate()
+        template += "@ARG\nD=M\n"
+        template += self.pushTemplate()
+        template += "@THIS\nD=M\n"
+        template += self.pushTemplate()
+        template += "@THAT\nD=M\n"
+        template += self.pushTemplate()
+        template += "@SP\nD=M\n@" + numArgs + "\nD=D-A\n"
+        template += "@ARG\nM=D\n"
+        template += "@SP\nD=M\n@LCL\nM=D\n"
+        template += self.writeGoto(label=functionName)
+        template += "(" + functionName + ")\n"
+
+        self.stream.write(template)
+
 
     def writeReturn(self):
         self.stream.write(
@@ -169,7 +174,7 @@ class CodeWriter:
                           "D=M\n"
                           "@FRAME\n"
                           "M=D //FRAME=LCL\n"
-                          "D=A\n"
+                          "D=M\n"
                           "@5\n"
                           "A=D-A\n"
                           "AD=M\n"
@@ -182,31 +187,31 @@ class CodeWriter:
                           "A=M\n"
                           "M=D //SP = ARG + 1\n"
                           "@ARG\n"
-                          "D=A\n"
+                          "D=M\n"
                           "@SP\n"
-                          "A=D+1\n"
+                          "M=D+1\n"
                           "@FRAME\n"
-                          "A=A-1\n"
+                          "A=M-1\n"
                           "A=M\n"
                           "D=M\n"
                           "@THAT\n"
                           "M=D //THAT = *(FRAME -1)\n"
                           "@FRAME\n"
-                          "D=A\n"
+                          "D=M\n"
                           "@2\n"
                           "AD=D-A\n"
                           "AD=M\n"
                           "@THIS\n"
                           "M=D //THIS = *(FRAME -2)\n"
                           "@FRAME\n"
-                          "D=A\n"
-                          "@3\n"
+                          "D=M\n"
+                          "@1\n"
                           "AD=D-A\n"
                           "AD=M\n"
                           "@THAT\n"
-                          "M=D //THAT = *(FRAME -3)\n"
+                          "M=D //THAT = *(FRAME -1)\n"
                           "@FRAME\n"
-                          "D=A\n"
+                          "D=M\n"
                           "@4\n"
                           "AD=D-A\n"
                           "AD=M\n"
