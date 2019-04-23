@@ -5,7 +5,8 @@ import sys
 
 def translate():
     fname = sys.argv[1]
-    codeWriter = CodeWriter.CodeWriter(fname[:-2] + "asm")
+    codeWriter = CodeWriter.CodeWriter()
+    codeWriter.setFileName("NestedCall.asm")
     parser = Parser.Parser(fname)
 
     codeWriter.writeInit()
@@ -31,7 +32,13 @@ def translate():
         elif commandType == "C_FUNCTION":
             functionName = parser.arg1()
             numLocals = parser.arg2()
+            print(functionName, numLocals)
             codeWriter.writeFunction(functionName=functionName, numLocals=numLocals)
+        elif commandType == "C_CALL":
+            functionName = parser.arg1()
+            numArgs = parser.arg2()
+            print(functionName, numLocals)
+            codeWriter.writeCall(functionName=functionName, numArgs=int(numArgs))
         elif commandType == "C_RETURN":
             codeWriter.writeReturn()
     codeWriter.close()

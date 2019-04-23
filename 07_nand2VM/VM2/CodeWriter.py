@@ -3,15 +3,15 @@ Translates VM commands into Hack assembly code.
 """
 class CodeWriter:
 
-    def __init__(self, stream):
-        self.stream = open(stream, "w")
+    def __init__(self):
+        self.stream = -1
         self.JEQIndex = -1
         self.JLTIndex = -1
         self.JGTIndex = -1
 
 
     def setFileName(self, fileName):
-        print("What is this for?")
+        self.stream = open(fileName, "w")
 
     def writeArithmetic(self, command):
         str = self.arithmeticTemplate()
@@ -148,8 +148,8 @@ class CodeWriter:
     def writeCall(self, functionName, numArgs):
         numArgs += 5
 
-        template = "@" + functionName + "// =======================\n"
-        template += "D=A // writeFunction executed!\n"
+        template = "@" + functionName + "_RET// =======================\n"
+        template += "D=A // writeCallFunction executed!\n"
         template += self.pushTemplate()
         template += "@LCL\nD=M\n"
         template += self.pushTemplate()
@@ -159,13 +159,14 @@ class CodeWriter:
         template += self.pushTemplate()
         template += "@THAT\nD=M\n"
         template += self.pushTemplate()
-        template += "@SP\nD=M\n@" + numArgs + "\nD=D-A\n"
+        template += "@SP\nD=M\n@" + str(numArgs) + "\nD=D-A\n"
         template += "@ARG\nM=D\n"
         template += "@SP\nD=M\n@LCL\nM=D\n"
-        template += self.writeGoto(label=functionName)
-        template += "(" + functionName + ")\n"
-
         self.stream.write(template)
+        self.writeGoto(label=functionName)
+        self.writeLabel(label=functionName + "_RET")
+
+
 
 
     def writeReturn(self):
@@ -174,10 +175,10 @@ class CodeWriter:
                           "D=M\n"
                           "@FRAME\n"
                           "M=D //FRAME=LCL\n"
-                          "D=M\n"
                           "@5\n"
                           "A=D-A\n"
-                          "AD=M\n"
+                          "A=M\n"
+                          "D=A\n"
                           "@RET\n"
                           "M=D //RET = *(FRAME-5)\n"
                           "@SP\n"
@@ -185,15 +186,17 @@ class CodeWriter:
                           "D=M\n"
                           "@ARG\n"
                           "A=M\n"
-                          "M=D //SP = ARG + 1\n"
+                          "M=D //*ARG = POP()\n"
                           "@ARG\n"
                           "D=M\n"
                           "@SP\n"
-                          "M=D+1\n"
+                          "M=D+1 //SP = ARG + 1\n"
                           "@FRAME\n"
-                          "A=M-1\n"
-                          "A=M\n"
+                          # "A=M-1\n"
+                          # "A=M\n"
                           "D=M\n"
+                          "AD=D-1\n"
+                          "AD=M\n"
                           "@THAT\n"
                           "M=D //THAT = *(FRAME -1)\n"
                           "@FRAME\n"
@@ -205,11 +208,11 @@ class CodeWriter:
                           "M=D //THIS = *(FRAME -2)\n"
                           "@FRAME\n"
                           "D=M\n"
-                          "@1\n"
+                          "@3\n"
                           "AD=D-A\n"
                           "AD=M\n"
-                          "@THAT\n"
-                          "M=D //THAT = *(FRAME -1)\n"
+                          "@ARG\n"
+                          "M=D //ARG = *(FRAME-3)\n"
                           "@FRAME\n"
                           "D=M\n"
                           "@4\n"
@@ -217,14 +220,19 @@ class CodeWriter:
                           "AD=M\n"
                           "@LCL\n"
                           "M=D //LCL = *(FRAME-4)\n"
+                          "@RET\n"
+                          "A=M\n"
+                          "0;JMP\n"
                           )
 
     def writeFunction(self, functionName, numLocals):
-        self.stream.write( "@" + numLocals + " //WriteFunction Start\n"
-                           "D=A\n"
-                           "@temp_" + functionName + "\n"
-                           "M=D\n"
+        self.stream.write(
                            "(" + functionName + ")\n"
+                           "\t@" + numLocals + " //WriteFunction Start\n"
+                           "\tD=A\n"
+                           "\t@temp_" + functionName + "\n"
+                           "\tM=D\n"
+                           "\t(START_" + functionName + ")\n"
                            "\t@END_" + functionName + "\n"
                            "\tD;JLE\n" 
                            "\t@0 //Push Zero Start \n"
@@ -235,7 +243,7 @@ class CodeWriter:
                            "\tM=D //Push Zero End\n"
                            "\t@temp_" + functionName + " //iterater - 1\n"
                            "\tMD=M-1\n"
-                           "\t@" + functionName + "\n"
+                           "\t@START_" + functionName + "\n"
                            "\t0;JMP\n"
                            "(END_" + functionName + ") //WriteFunction End\n")
 
@@ -255,15 +263,15 @@ class CodeWriter:
         POP SP to D
     """
     def popTemplate(self):
-        return  "@SP\n" \
-                "A=M // dereference\n" \
-                "M=D // *sp = D(address OFFSET + index)\n" \
+        return  "@SP //popTemplate START\n" \
+                "A=M // ?\n" \
+                "M=D \n" \
                 "@SP\n" \
-                "AM=M-1 //sp--, dereference\n" \
-                "D=M //D=*sp\n" \
-                "A=A+1 //A=sp++ sp+1(OFFSET + index address)\n" \
-                "A=M //dereference to OFFSET + index address\n" \
-                "M=D //update value\n"
+                "AM=M-1 \n" \
+                "D=M \n" \
+                "A=A+1 \n" \
+                "A=M \n" \
+                "M=D //popTemplate END\n"
 
     def ifTemplate(self, condition):
         index = 0
