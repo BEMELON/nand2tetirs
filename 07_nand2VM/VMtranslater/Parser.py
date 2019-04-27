@@ -40,10 +40,10 @@ class Parser:
             return "C_POP"
         elif instruction.find("label") != -1:
             return "C_LABEL"
-        elif instruction.find("goto") != -1:
-            return "C_GOTO"
         elif instruction.find("if-goto") != -1:
             return "C_IF"
+        elif instruction.find("goto") != -1:
+            return "C_GOTO"
         elif instruction.find("function") != -1:
             return "C_FUNCTION"
         elif instruction.find("return") != -1:
@@ -55,7 +55,6 @@ class Parser:
 
     def arg1(self):
         instruction = self.stream[self.index]
-
         if self.commandType() == "C_ARITHMETIC":
             return instruction
         elif self.commandType() == "C_RETURN":
@@ -65,6 +64,10 @@ class Parser:
 
     def arg2(self):
         instruction = self.stream[self.index]
-        if self.commandType() == "C_PUSH" or "C_POP" or "C_CALL" or "C_FUNCTION":
+        if self.commandType() == "C_PUSH" or \
+           self.commandType() == "C_POP" or \
+           self.commandType() == "C_CALL" or \
+           self.commandType() == "C_FUNCTION":
+
             return instruction.split(' ')[2]
         return None
