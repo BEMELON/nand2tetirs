@@ -41,7 +41,7 @@ class CodeWriter:
 
         self.stream.write(str)
 
-    def writePushPop(self, command, segment, index):
+    def writePushPop(self, command, segment, index, name):
         template = ""
         if command == "C_PUSH":
 
@@ -61,7 +61,7 @@ class CodeWriter:
                     template += "D=M\n"
 
                 elif segment == "static":
-                    offset = str(16 + index) + " //WritePushPop Function\n"
+                    offset = '.'.join([name, str(index)]) + " //WritePushPop Function\n"
                     template = "@" + offset
                     template += "D=M\n"
 
@@ -97,7 +97,7 @@ class CodeWriter:
                 template += "D=A\n"
 
             elif segment == "static":
-                offset = str(16 + index) + " //WritePushPop Function\n"
+                offset = '.'.join([name, str(index)]) + " //WritePushPop Function\n"
                 template = "@" + offset
                 template += "D=A\n"
             else:
@@ -129,6 +129,7 @@ class CodeWriter:
                            "@SP\n"
                            "M=D\n")
         self.writeCall(functionName="Sys.init", numArgs=0, jump=True)
+
 
     def writeLabel(self, label):
         self.stream.write("(" + label + ")\n")

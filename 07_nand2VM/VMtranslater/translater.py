@@ -20,7 +20,7 @@ def translate():
             elif commandType == "C_PUSH" or commandType == "C_POP":
                 segment = parser.arg1()
                 index = parser.arg2()
-                codeWriter.writePushPop(command=commandType, segment=segment, index=int(index))
+                codeWriter.writePushPop(command=commandType, segment=segment, index=int(index), name=fname[:-3])
             elif commandType == "C_LABEL":
                 label = parser.arg1()
                 codeWriter.writeLabel(label=label)
